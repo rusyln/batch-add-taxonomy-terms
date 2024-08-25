@@ -4,7 +4,6 @@ namespace Drupal\taxonomy_batch_add\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\TermStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -109,8 +108,10 @@ class BatchAddTermsForm extends FormBase {
       $form_state->setErrorByName('terms', $this->t('The following terms already exist in the selected vocabulary: @terms', ['@terms' => implode(', ', $duplicates)]));
     }
 
-    // Save the new terms to the form state.
+    // Save the new terms and duplicates count to the form state.
     $form_state->set('new_terms', $new_terms);
+    $form_state->set('duplicates_count', count($duplicates));
+    $form_state->set('added_terms_count', count($new_terms));
   }
 
   /**
@@ -129,6 +130,12 @@ class BatchAddTermsForm extends FormBase {
     foreach ($terms as $term) {
       $batch['operations'][] = ['taxonomy_batch_add_process_term', [['vocabulary' => $vocabulary, 'name' => $term]]];
     }
+
+    // Store counts for use in the batch finished callback.
+    $batch['operations'][] = ['taxonomy_batch_add_count_summary', [
+      'added_terms_count' => $form_state->get('added_terms_count'),
+      'duplicates_count' => $form_state->get('duplicates_count'),
+    ]];
 
     batch_set($batch);
   }
