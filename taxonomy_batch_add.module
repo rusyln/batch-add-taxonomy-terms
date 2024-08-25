@@ -1,0 +1,42 @@
+<?php
+
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_help().
+ */
+function taxonomy_batch_add_help($route_name, \Drupal\Core\Routing\RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.taxonomy_batch_add':
+      return '<p>' . t('A module to batch add taxonomy terms.') . '</p>';
+  }
+}
+
+/**
+ * Batch process callback to add taxonomy terms.
+ */
+function taxonomy_batch_add_process_term($term_data, &$context) {
+  $vocabulary_id = $term_data['vocabulary'];
+  $term_name = $term_data['name'];
+
+  if (!empty($term_name)) {
+    $term = Term::create([
+      'name' => $term_name,
+      'vid' => $vocabulary_id,
+    ]);
+    $term->save();
+    $context['message'] = t('Added term: @term', ['@term' => $term_name]);
+  }
+}
+
+/**
+ * Batch finished callback.
+ */
+function taxonomy_batch_add_finished($success, $results, $operations) {
+  if ($success) {
+    \Drupal::messenger()->addStatus(t('All terms have been added successfully.'));
+  }
+  else {
+    \Drupal::messenger()->addWarning(t('An error occurred during the batch process.'));
+  }
+}

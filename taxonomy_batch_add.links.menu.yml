@@ -1,0 +1,8 @@
+taxonomy_batch_add.admin:
+  title: 'Batch Add Taxonomy Terms'
+  description: 'Add multiple taxonomy terms to a selected vocabulary.'
+  parent: 'system.admin'
+  route_name: taxonomy_batch_add.form
+  weight: 10
+  permissions: 
+    - administer taxonomy

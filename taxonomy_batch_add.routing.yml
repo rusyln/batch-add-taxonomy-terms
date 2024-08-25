@@ -1,0 +1,7 @@
+taxonomy_batch_add.form:
+  path: '/admin/structure/taxonomy/batch-add'
+  defaults:
+    _form: '\Drupal\taxonomy_batch_add\Form\BatchAddTermsForm'
+    _title: 'Batch Add Taxonomy Terms'
+  requirements:
+    _permission: 'administer taxonomy'

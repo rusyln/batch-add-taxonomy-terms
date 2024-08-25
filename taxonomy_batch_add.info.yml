@@ -1,0 +1,7 @@
+name: 'Taxonomy Batch Add'
+type: module
+description: 'A module to batch add taxonomy terms.'
+package: Taxonomy
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:taxonomy
