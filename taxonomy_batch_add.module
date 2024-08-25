@@ -30,13 +30,16 @@ function taxonomy_batch_add_process_term($term_data, &$context) {
 }
 
 /**
- * Batch finished callback.
+ * Batch finished callback to display a summary.
  */
-function taxonomy_batch_add_finished($success, $results, $operations) {
-  if ($success) {
-    \Drupal::messenger()->addStatus(t('All terms have been added successfully.'));
+function taxonomy_batch_add_finished($success, array $results, array $operations) {
+    $message = $success 
+      ? t('@added_terms terms were added successfully. @duplicates terms were duplicates and were not added.', [
+          '@added_terms' => $results['added_terms_count'],
+          '@duplicates' => $results['duplicates_count'],
+        ])
+      : t('An error occurred while adding terms.');
+  
+    \Drupal::messenger()->addMessage($message);
   }
-  else {
-    \Drupal::messenger()->addWarning(t('An error occurred during the batch process.'));
-  }
-}
+  
