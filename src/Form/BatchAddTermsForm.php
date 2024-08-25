@@ -94,16 +94,23 @@ class BatchAddTermsForm extends FormBase {
     }
 
     $duplicates = [];
+    $new_terms = [];
     foreach ($terms as $term) {
       if (isset($existing_terms[$term])) {
         $duplicates[] = $term;
+      } else {
+        $new_terms[] = $term;
       }
     }
 
     // Set error if duplicates are found.
     if (!empty($duplicates)) {
+      $form_state->setRebuild();
       $form_state->setErrorByName('terms', $this->t('The following terms already exist in the selected vocabulary: @terms', ['@terms' => implode(', ', $duplicates)]));
     }
+
+    // Save the new terms to the form state.
+    $form_state->set('new_terms', $new_terms);
   }
 
   /**
@@ -111,7 +118,7 @@ class BatchAddTermsForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $vocabulary = $form_state->getValue('vocabulary');
-    $terms = array_filter(array_map('trim', explode("\n", $form_state->getValue('terms'))));
+    $terms = $form_state->get('new_terms');
 
     $batch = [
       'title' => $this->t('Adding Taxonomy Terms'),
